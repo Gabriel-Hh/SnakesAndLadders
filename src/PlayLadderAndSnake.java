@@ -67,6 +67,8 @@ public class PlayLadderAndSnake {
 	
 	case 1:{
 	  int numberOfPlayers = playerQuantitySelect();
+//	  LadderAndSnake.settings[2] = new Boolean(true); //By Default, printOutRoundResults = true
+	  
 	  LadderAndSnake currentGame = new LadderAndSnake(numberOfPlayers);
 	  
 	  if(currentGame.isSetPlayerNamesAndChars()) {currentGame.setPlayerNamesAndChars();}

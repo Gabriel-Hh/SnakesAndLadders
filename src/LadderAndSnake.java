@@ -44,7 +44,7 @@ public class LadderAndSnake {
   private Player[] playerArray;
   private int[][] lastRound;    //lastRound[][0] holds a players roll, lastround[][1] holds a player last position
   private Map<Character,String> charMap = new HashMap<>(); //Used to check the character present at Finish once gameWon. 
-  static private boolean[] settings= new boolean[3];       //Game setting saved for session, applied to each new game. Can be changed with setSettings().
+  static public boolean[] settings= new boolean[3];       //Game setting saved for session, applied to each new game. Can be changed with setSettings().
   private boolean setPlayerNamesAndChars = false;          //When false, default names and chars will be kept
   private boolean waitBetweenRounds = false;               //Implemented by playTillWon(). When false, entire game played and displayed without stopping for input
   private boolean printOutRoundResults = false;            //Implemented by playTurn(). When true, roll values and position change will be displayed after each round
@@ -145,21 +145,23 @@ public class LadderAndSnake {
 	  int columnIndex ;
 
 	  //Parses row and column to set
-	  if(charIndexString.length() == 2) {
-		rowIndex = Integer.parseInt(charIndexString.substring(0, 1)); //get row
-		columnIndex = Integer.parseInt(charIndexString.substring(1)); //get column
-	  }
-	  else {
-		columnIndex = Integer.parseInt(charIndexString); //account for single digit charIndex
-	  } 
-	  board[rowIndex][columnIndex] = playerChar; //Sets playerChar to position in currentBoard
+//	  if((charIndexString.charAt(0) != '-')) {
+		if((charIndexString.length() == 2)&&(charIndexString.charAt(0) != '-')) {
+		  rowIndex = Integer.parseInt(charIndexString.substring(0, 1)); //get row
+		  columnIndex = Integer.parseInt(charIndexString.substring(1)); //get column
+		}
+		else {
+		  columnIndex = Integer.parseInt(charIndexString); //account for single digit charIndex
+		} 
+		board[rowIndex][columnIndex] = playerChar; //Sets playerChar to position in currentBoard
+//	  }
 	}
 
   }//********************************END OF boardLS CLASS***************************************
   
   /**
    * getSettings return previously select game settings.
-   * @return setting[] either default or chosen by mainMenu() in PlayLadderAndSnake
+   * @return setting[] either default or chosen by PlayLadderAndSnake -> mainMenu() -> setSettings()
    * @see PlayLadderAndSnake
    * @setSettings()
    */
@@ -358,12 +360,12 @@ public class LadderAndSnake {
 		  setGameWon(true);
 		}
 	  }
-	  updateCurrentBoard();
-
-	  System.out.println(getCurrentBoard());
-	  //Prints out results of round if boolean printOutRoundResults.
-	  if(isPrintOutRoundResults()) {printOutRoundResults();}
 	}
+	updateCurrentBoard();
+
+	System.out.println(getCurrentBoard());
+	//Prints out results of round if boolean printOutRoundResults.
+	if(isPrintOutRoundResults()) {printOutRoundResults();}
   }
   
   /**
@@ -617,17 +619,18 @@ public class LadderAndSnake {
    */
   public void assignOrder() {
 	int orderAssignment = 1;
-
-	for(int nextHighestRoll = 6; nextHighestRoll > 0; nextHighestRoll--) {
-	  for(int i = 0; i < orderArray.length; i++) {
-		for(int j = 0; j < orderArray.length; j++) { // Checks if orderAssignment is already taken by a player not in TieBreaker
-		  if((orderArray[j][0] == orderAssignment)&&(orderArray[j][2] != 0)) {
-			if(orderAssignment<(orderArray.length -1)) {orderAssignment++;}
+	while(orderAssignment < orderArray.length) {
+	  for(int nextHighestRoll = 6; nextHighestRoll > 0; nextHighestRoll--) {
+		for(int i = 0; i < orderArray.length; i++) {
+		  for(int j = 0; j < orderArray.length; j++) { // Checks if orderAssignment is already taken by a player not in TieBreaker
+			if((orderArray[j][0] == orderAssignment)&&(orderArray[j][2] != 0)) {
+			  if(orderAssignment<(orderArray.length -1)) {orderAssignment++;}
+			}
+		  }//END check already Assigned
+		  if((orderArray[i][1] == nextHighestRoll)&&(orderArray[i][2] == 0)) {
+			orderArray[i][0] = orderAssignment;
+			orderAssignment++;
 		  }
-		}//END check already Assigned
-		if((orderArray[i][1] == nextHighestRoll)&&(orderArray[i][2] == 0)) {
-		  orderArray[i][0] = orderAssignment;
-		  orderAssignment++;
 		}
 	  }
 	}
@@ -650,11 +653,11 @@ public class LadderAndSnake {
 		}
 	  }//END of j-loop
 	  if (orderArray[i][0]!=-1) { orderArray[i][2]= 1;}
-//	  j--; // Needed because j-loop increments j on completion -> OutOfBounds
-//	  if((orderArray[j][0] != -1)&&(i == (orderArray.length - 2))&&(j == (orderArray.length-1))) {orderArray[j][2] = 1;}
+	  j--; // Needed because j-loop increments j on completion -> OutOfBounds
+	  if((orderArray[j][0] != -1)&&(i == (orderArray.length - 2))&&(j == (orderArray.length-1))) {orderArray[j][2] = 1;}
 	}//END of i-loop
-	j--; // Needed because j-loop increments j on completion -> OutOfBounds
-	if((orderArray[j][0] != -1)&&(j == (orderArray.length-1))) {orderArray[j][2] = 1;}
+//	j--; // Needed because j-loop increments j on completion -> OutOfBounds
+//	if((orderArray[j][0] != -1)&&(j == (orderArray.length-1))) {orderArray[j][2] = 1;}
   }
 
   /**

@@ -69,8 +69,6 @@ public class PlayLadderAndSnake {
 	  int numberOfPlayers = playerQuantitySelect();
 	  LadderAndSnake currentGame = new LadderAndSnake(numberOfPlayers);
 	  
-	  if(currentGame.isSetPlayerNamesAndChars()) {currentGame.setPlayerNamesAndChars();}
-	  
 	  currentGame.fillHashMap(); //Maps Character playerChar to String playerName
 	  
 	  currentGame.decidePlayerOrder();

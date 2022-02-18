@@ -244,18 +244,18 @@ public class LadderAndSnake {
 	}
   }
 
-  /** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Modified since Upload,  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   * DELETED,functionality included in playTurn() for better efficiency.
+  /**
    * Checks if a player has won current game.
    * sets boolean gameWon to true the game has been won.
    */
-//  public void checkIfGameWon() {
-//	for(int i = 0; i < playerArray.length; i++) {
-//	  if(playerArray[i].getPosition()==Player.MAX_POSITION) {
-//		winnerIndex = i; //USED BY printOutRoundResults()
-//		setGameWon(true);
-//	  }
-//  }
+  public void checkIfGameWon() {
+	for(int i = 0; i < playerArray.length; i++) {
+	  if(playerArray[i].getPosition()==Player.MAX_POSITION) {
+		winnerIndex = i; 
+		setGameWon(true);
+	  }
+	}
+  }
   
   
   /**
@@ -344,26 +344,26 @@ public class LadderAndSnake {
    * Prints board
    * If printOutRoundResults() is true will print out text of each players turn
    */
-  public void playTurn() { ///!!!!!!!!!!!!!!!!!!Modified since upload!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	for(int i = 0; i < playerArray.length; i++) {
+  public void playTurn() {
+	int i = 0;
+	
+	for(Player player:playerArray) {
 	  if(!isGameWon()) {
 		int increment = flipDice();
 		lastRound[i][0] = increment; //
-		lastRound[i][1] = playerArray[i].getPosition();
-		int newPosition = playerArray[i].getPosition() + increment;
-		playerArray[i].setPosition(newPosition);
-		playerArray[i].updatePositionForLadderOrSnake();
-		if(playerArray[i].getPosition()==Player.MAX_POSITION) { //ADDED after upload, before was seperate method-> checkIFGameWon() 
-		  winnerIndex = i; //USED BY printOutRoundResults()
-		  setGameWon(true);
-		}
+		lastRound[i][1] = player.getPosition();
+		int newPosition = player.getPosition() + increment;
+		player.setPosition(newPosition);
+		player.updatePositionForLadderOrSnake();
+		checkIfGameWon();
 	  }
-	  updateCurrentBoard();
+		i++;
+	 }
+	updateCurrentBoard();
 
-	  System.out.println(getCurrentBoard());
-	  //Prints out results of round if boolean printOutRoundResults.
-	  if(isPrintOutRoundResults()) {printOutRoundResults();}
-	}
+	System.out.println(getCurrentBoard());
+	//Prints out results of round if boolean printOutRoundResults.
+	if(isPrintOutRoundResults()) {printOutRoundResults();}
   }
   
   /**
@@ -638,8 +638,8 @@ public class LadderAndSnake {
    * @see decidePlayerOrder().
    */
   public void findAndTagAllTies() {
-	int j=0;// This j-value is not used, makes complier happy
 	for(int i = 0; i < orderArray.length-1; i++) {
+	  int j;
 	  for(j = (i+1); j  < orderArray.length;j++) {
 		if((orderArray[i][1] == orderArray[j][1])&(orderArray[i][2]==0)&&(orderArray[j][2]==0)) {
 		  orderArray[i][0]=-1;
@@ -649,12 +649,10 @@ public class LadderAndSnake {
 		  }
 		}
 	  }//END of j-loop
+	  j--; // Needed because j-loop increments j on completion -> OutOfBounds
 	  if (orderArray[i][0]!=-1) { orderArray[i][2]= 1;}
-//	  j--; // Needed because j-loop increments j on completion -> OutOfBounds
-//	  if((orderArray[j][0] != -1)&&(i == (orderArray.length - 2))&&(j == (orderArray.length-1))) {orderArray[j][2] = 1;}
+	  if((orderArray[j][0] != -1)&&(j == (orderArray.length-1))) {orderArray[j][2] = 1;}
 	}//END of i-loop
-	j--; // Needed because j-loop increments j on completion -> OutOfBounds
-	if((orderArray[j][0] != -1)&&(j == (orderArray.length-1))) {orderArray[j][2] = 1;}
   }
 
   /**

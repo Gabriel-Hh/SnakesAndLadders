@@ -10,7 +10,7 @@ import java.util.Scanner;
  * Driver Class for LadderAndSnakes game.
  * 
  *@author Gabriel Horth
- *@version 1.0
+ *@version 1.2
  *@see Player
  *@see LadderAndSnake
  */
@@ -51,7 +51,7 @@ public class PlayLadderAndSnake {
 	Throwaway = keyboard.nextLine();
 	
 	switch(option) {
-	case 2:System.out.println("Option not initialized, you must return to main menu");
+	case 2:System.out.println("Option not initialized, you must return to main menu.");
 		LadderAndSnake.roundStall();
 		mainMenu();
 	break;

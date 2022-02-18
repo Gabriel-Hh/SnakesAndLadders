@@ -49,9 +49,10 @@ public class LadderAndSnake {
   private boolean waitBetweenRounds = false;               //Implemented by playTillWon(). When false, entire game played and displayed without stopping for input
   private boolean printOutRoundResults = false;            //Implemented by playTurn(). When true, roll values and position change will be displayed after each round
 
+  
   private Player[] unsortedPlayerArray; //USED by decidePlayerOrder() and sub-methods
   private int[][] orderArray; //USED by decidePlayerOrder() and sub-methods
-  
+  private int orderAssignment = 0; //USED by assignOrder()
   /**
    * InnerClass boardLS generates and manipulates a board character array for LadderAndSnake class.
    * @author user
@@ -245,21 +246,7 @@ public class LadderAndSnake {
 	  charMap.put(player.getChar(),player.getName());
 	}
   }
-
-  /** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Modified since Upload,  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   * DELETED,functionality included in playTurn() for better efficiency.
-   * Checks if a player has won current game.
-   * sets boolean gameWon to true the game has been won.
-   */
-//  public void checkIfGameWon() {
-//	for(int i = 0; i < playerArray.length; i++) {
-//	  if(playerArray[i].getPosition()==Player.MAX_POSITION) {
-//		winnerIndex = i; //USED BY printOutRoundResults()
-//		setGameWon(true);
-//	  }
-//  }
-  
-  
+ 
   /**
    * Maps winners Character back to winners name, return String.
    * @return playerName "has won the game!!!!"
@@ -463,16 +450,15 @@ public class LadderAndSnake {
   }
 
   /**
-   * Print current Players names and characters.
+   * Prints current Players names and characters.
    */
   public void printPlayerArray() {
-	String playerString = "";
 	int i = 0;
 	for(Player player: playerArray) {
 	  System.out.print("\nPlayer " + (i+1) + ": " + player.getName() + " '" + player.getChar() + "'.");
 		i++;
 	}
-	System.out.println(playerString);
+	System.out.println();
   }
 
  /**
@@ -561,6 +547,7 @@ public class LadderAndSnake {
 	while(!keyboard.hasNextLine()) {} //Stalls until user hits ENTER
 	Throwaway = keyboard.nextLine();
   }
+  
   /**
    * Picks the order in which Players will play current game through dice rolls.
    * @see playerOrderStall()
@@ -580,9 +567,9 @@ public class LadderAndSnake {
 	}
 	
 	orderArray = new int[playerArray.length][3]; //USED BY rollForRemainingPlayers(), assignOrder(), findAndTagAllTies()
-	//orderArray[playerIndex][0]= playing order attributed {0,1,2,3, etc} with zero starting first. If value: -1 -> the player has tied in current round
+	//orderArray[playerIndex][0]= playing order attributed {0,1,2,3, etc} with 1 starting first. If value: -1 -> the player has tied in current round
 	//orderArray[playerIndex][1]= last dice value
-	//orderArray[playerIndex][2]= value:0-> a tie, therefore will reroll, value:1 -> not a tie, therefore playing order will be attributed
+	//orderArray[playerIndex][2]= value:0 -> a tie, therefore will reroll, value:1 -> not a tie, therefore playing order will be kept
 	
 	
 	while(!isOrdered()) {
@@ -591,7 +578,6 @@ public class LadderAndSnake {
 	  findAndTagAllTies();
 	  if(isWaitBetweenRounds()&&(!isOrdered())) {roundStall();}
 	}
-	
 	updateToSortedPlayerArray();
 	
 	System.out.println("\nPlayer order determined:");
@@ -618,24 +604,37 @@ public class LadderAndSnake {
    * @see decidePlayerOrder()
    */
   public void assignOrder() {
-	int orderAssignment = 1;
-	while(orderAssignment < orderArray.length) {
-	  for(int nextHighestRoll = 6; nextHighestRoll > 0; nextHighestRoll--) {
+	orderAssignment = 1;
+	for(int nextHighestRoll = 6; nextHighestRoll > 0;) {
+	  if(orderAssignment <= orderArray.length) {
+		checkAlreadyAttributed();
 		for(int i = 0; i < orderArray.length; i++) {
-		  for(int j = 0; j < orderArray.length; j++) { // Checks if orderAssignment is already taken by a player not in TieBreaker
-			if((orderArray[j][0] == orderAssignment)&&(orderArray[j][2] != 0)) {
-			  if(orderAssignment<(orderArray.length -1)) {orderAssignment++;}
-			}
-		  }//END check already Assigned
+
+	
 		  if((orderArray[i][1] == nextHighestRoll)&&(orderArray[i][2] == 0)) {
 			orderArray[i][0] = orderAssignment;
 			orderAssignment++;
+			//			checkAlreadyAttributed();//Might not be needed here, ties are already grouped together
 		  }
 		}
+		nextHighestRoll--; 
+	  }
+	  else {return;}
+	}
+  }
+  /**
+   * Methods checks if order is already assigned for a non-tied player before assigning.
+   * @see decidePlayerOrder()
+   * @see assignOrder()
+   */
+  public void checkAlreadyAttributed() {
+	for(int j = 0; j < orderArray.length; j++) {
+	  if ((orderArray[j][0] == orderAssignment)&&(orderArray[j][2] == 1)) {
+		orderAssignment++;
+		checkAlreadyAttributed();
 	  }
 	}
   }
-  
   /**
    * Identifies and marks players who have rolled a tie for decidePlayerOrder()
    * @see decidePlayerOrder().
